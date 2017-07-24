@@ -148,4 +148,21 @@ variant imagemagick description {Enable ImageMagick bindings} {
     configure.args-append  --with-imagemagick
 }
 
+subport emacs-mac-app-amk {
+    conflicts    emacs-mac-app emacs-mac-app-devel
+    post-destroot {
+        set app_contents ${destroot}${applications_dir}/EmacsMac.app/Contents
+        exec /usr/libexec/PlistBuddy \
+            -c "Add :LSHasLocalizedDisplayName bool true" \
+            -c "Add :CFBundleName string Emacs" \
+            -c "Add :CFBundleDisplayName string EmacsMac" \
+            -c "Set :CFBundleIconFile eMax.icns" \
+            ${app_contents}/Info.plist
+        file copy ${filespath}/eMax.icns ${app_contents}/Resources/
+        set fo [open ${app_contents}/Resources/English.lproj/InfoPlist.strings a]
+        puts $fo "CFBundleDisplayName = \"eMax\";"
+        close $fo
+    }
+}
+
 livecheck.version   ${version}
