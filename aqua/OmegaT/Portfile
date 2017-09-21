@@ -1,0 +1,64 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                OmegaT
+set name_lower      [string tolower $name]
+version             4.1.2_02
+set flavor          Latest
+categories          aqua textproc java
+license             GPL-3
+maintainers         {@amake madlon-kay.com:aaron+macports} openmaintainer
+
+description         A full-featured Computer-Aided Translation (CAT) tool
+long_description    OmegaT is a free and open source multiplatform Computer Assisted \
+                    Translation tool with fuzzy matching, translation memory, keyword \
+                    search, glossaries, and translation leveraging into updated projects.
+
+homepage            https://omegat.org/
+platforms           darwin
+distname            ${name}_${version}_Beta_Mac_Signed
+set dist_path_ver   [string map {_0 "%20update%20" _ "%20update%20"} $version]
+master_sites        sourceforge:project/${name_lower}/${name}%20-%20${flavor}/${name}%20${dist_path_ver}
+
+checksums           rmd160  52e8f0529bb767011663f7c24ea75d3e8ec127f5 \
+                    sha256  8a3574d97de621da21b99749a8af67edee0ac414ecec357d7098f93423fd1238
+
+use_zip             yes
+use_configure       no
+
+build.cmd           true
+
+default_variants +jre
+
+variant jre description "Use the bundled JRE instead of the system one" {}
+
+destroot    {
+    copy ${worksrcpath}/${name}.app ${destroot}${applications_dir}
+
+    set app_contents ${applications_dir}/${name}.app/Contents
+
+    proc wrapper_script {java} {
+        global destroot prefix name name_lower
+        upvar app_contents contents
+        set cli_script ${destroot}${prefix}/bin/${name_lower}
+        set fp [open $cli_script w]
+        puts $fp "#!/bin/sh"
+        puts $fp "exec ${java} -Xdock:name=${name} \\"
+        puts $fp "    -jar ${contents}/Java/${name}.jar \"\$@\""
+        close $fp
+        system "chmod +x ${cli_script}"
+    }
+
+    if {[variant_isset jre]} {
+        wrapper_script "${app_contents}/PlugIns/jre.bundle/Contents/Home/bin/java"
+    } else {
+        wrapper_script "java"
+        delete ${destroot}${app_contents}/PlugIns/jre.bundle
+        reinplace "s|<key>JVMRuntime</key>||" ${destroot}${app_contents}/Info.plist
+        reinplace "s|<string>jre.bundle</string>||" ${destroot}${app_contents}/Info.plist
+    }
+}
+
+livecheck.type      sourceforge
+livecheck.regex     ${name}_(\\d+\\.\\d+(\\.\\d+)?(_\\d+)?)_Beta_Mac_Signed\\.zip
