@@ -1,0 +1,48 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+
+name                Okapi
+version             0.34
+categories          aqua textproc java
+license             Apache-2
+maintainers         {@amake madlon-kay.com:aaron+macports} openmaintainer
+
+description         A set of tools for localization and translation
+long_description    The Okapi Framework is a cross-platform and free open-source set of \
+                    components and applications that offer extensive support for localizing \
+                    and translating documentation and software.
+homepage            http://okapiframework.org/
+platforms           darwin
+distname            okapi-apps_cocoa-macosx-x86_64_${version}
+master_sites        https://dl.bintray.com/okapi/Distribution/
+
+checksums           rmd160  5ab9198189945491cf266e4d3a216481756ec507 \
+                    sha256  c95757b6a48c5a7ca721aeb315c9337a630c57ba70a58e1d68cae4218ab042d3
+
+use_dmg             yes
+use_configure       no
+
+build.cmd           true
+
+destroot    {
+    set okapi_home ${applications_dir}/${name}
+    copy ${worksrcpath}/${name}_${version} ${destroot}${okapi_home}
+
+    proc wrapper_script {script_name script_target} {
+        global destroot prefix applications_dir name
+        upvar okapi_home ok_home
+        set cli_script ${destroot}${prefix}/bin/${script_name}
+        set fp [open $cli_script w]
+        puts $fp "#!/bin/sh"
+        puts $fp "exec \"${ok_home}/${script_target}\" \"$@\""
+        close $fp
+        system "chmod +x ${cli_script}"
+    }
+    wrapper_script tikal tikal.sh
+    wrapper_script rainbow Rainbow.app/Contents/MacOS/rainbow.sh
+}
+
+livecheck.type      regex
+livecheck.url       ${master_sites}
+livecheck.regex     okapi-apps_cocoa-macosx-x86_64_(\\d+(\\.\\d+)?)\\.dmg
