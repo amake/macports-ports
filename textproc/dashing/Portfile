@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           github 1.0
+
+github.setup        technosophos dashing 0e0519d76ed6bbbe02b00ee1d1ac24697d349f49
+version             20180216
+name                dashing
+categories          textproc devel
+platforms           darwin
+maintainers         {amake @amake} openmaintainer
+license             MIT
+
+description         Generate Dash documentation from HTML files
+
+long_description    ${description}
+
+depends_build       port:go \
+                    port:glide
+use_configure       no
+
+checksums           rmd160  3e1be590c5e74509e47951f460e783fbee111a30 \
+                    sha256  f8786555cbe942d37c9b242813b40a2d8531290b0b3212ed8656a3e25743c4cc \
+                    size    57610
+
+worksrcdir          ${workpath}/src/github.com/${github.author}/${github.project}
+
+post-extract {
+    xinstall -d [file dirname ${worksrcdir}]
+    move [glob ${workpath}/${name}-*] ${worksrcpath}
+    reinplace "s|VERSION :=|VERSION ?=|" ${worksrcpath}/Makefile
+}
+
+build.target        build
+build.args          VERSION=${version}
+build.env           GOPATH=${workpath} \
+                    CC=${configure.cc}
+
+pre-build {
+    system -W ${worksrcpath} "GOPATH=${workpath} glide --no-color install"
+}
+
+destroot {
+    xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin
+}
