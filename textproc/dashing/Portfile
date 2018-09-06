@@ -16,11 +16,7 @@ description         Generate Dash documentation from HTML files
 
 long_description    ${description}
 
-depends_build       port:go \
-                    port:glide
-use_configure       no
-
-checksums           dashing-${version}.tar.gz \
+checksums           dashing-${github.version}.tar.gz \
                         rmd160  3e1be590c5e74509e47951f460e783fbee111a30 \
                         sha256  f8786555cbe942d37c9b242813b40a2d8531290b0b3212ed8656a3e25743c4cc \
                         size    57610
@@ -32,6 +28,35 @@ go.vendors-append   github.com/andybalholm/cascadia 3ad29d1ad1c4f2023e3556033243
                     golang.org/x/net 0cb26f788dd4625d1956c6fd97ffc4c90669d129 \
                     golang.org/x/text cf4986612c83df6c55578ba198316d1684a9a287 \
                     gopkg.in/yaml.v2 f7716cbe52baa25d2e9b0d0da546fcf909fc16b4
+
+checksums-append    andybalholm-cascadia-${cascadia.version}.tar.gz \
+                        rmd160  260761bdbf8f199e21cb72f3f827f162259a7b86 \
+                        size    12346 \
+                        sha256  78d0889d91a28de63ad312effcd9ca9a0e2c72e77dda33a3f47a55276b4263a3 \
+                    codegangsta-cli-${cli.version}.tar.gz \
+                        rmd160  99b6a5ed7b65bc7e7fdbc3af41925a13d300004b \
+                        size    20788 \
+                        sha256  78a2b94b2b77a9afeba94adb0fcca17200d329a41dc725e238b985f48d8d90c0 \
+                    mattn-go-sqlite3-${go-sqlite3.version}.tar.gz \
+                        rmd160  66eb7d8b7f23357ed5917b77f74b2bed3a271549 \
+                        size    1509734 \
+                        sha256  3c88da82d6abd95fec04387477d936cf58f5af148ee5e539458d46af1f337349 \
+                    golang-crypto-${crypto.version}.tar.gz \
+                        rmd160  87c757c1889b87b2a3d96864f807bc44bee985c1 \
+                        size    897972 \
+                        sha256  59f39066ab41e17e72ede6010003bc942447fa59cf2755b0487ac72e9c76c891 \
+                    golang-net-${net.version}.tar.gz \
+                        rmd160  4ab0c30605ada46ab07bade2d1d0b3b90669a805 \
+                        size    725315 \
+                        sha256  feabe1d4de37a1d350beef27c4b406d00f36974731935255ccb9c17ef79c3b2e \
+                    golang-text-${text.version}.tar.gz \
+                        rmd160  63f163f5b0456cb635ecbae80370ce9ed57b8c28 \
+                        size    3913048 \
+                        sha256  8708325f5cec30f610435061f8bef3b8b148cc0796bbbbe90192e275639f31b2 \
+                    go-yaml-yaml-${yaml.version}.tar.gz \
+                        rmd160  569af743928a8916c87bdac4fcd80959600bb079 \
+                        size    63000 \
+                        sha256  04a6c13e101d5d658a52c667eced883c5e7c41cb25f29023c75953b56d025665
 
 post-extract {
     reinplace "s|VERSION :=|VERSION ?=|" ${worksrcpath}/Makefile
