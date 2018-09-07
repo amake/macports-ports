@@ -2,6 +2,7 @@
 
 PortSystem      1.0
 PortGroup       github 1.0
+PortGroup       golang 1.0
 
 github.setup    peco peco 0.5.3 v
 revision        0
@@ -15,47 +16,12 @@ long_description \
 license         MIT
 
 maintainers     {kimuraw @kimuraw} openmaintainer
-platforms       darwin
-
-depends_build   port:go
-use_configure   no
-dist_subdir     go
 
 # peco
 checksums       peco-${version}.tar.gz \
                     md5 42804cb50a16a40524de7dc0e1fa8746 \
                     sha1 f499d639ea09ac375410748b96344a5e18d9cfed \
                     sha256 4553ce77c6c7fb218b1ff513ec052badb946482833c3ea88c47ae788e4a48a9e
-
-# utility for go-vendoring codes
-set go.vendors {}
-# go.vendors-append name1 ver1 name2 ver2...
-proc go.vendors-append {args} {
-    global go.vendors
-
-    foreach {imp_name vers} ${args} {
-        set vlist [split ${imp_name} /]
-
-        set vdomain [lindex ${vlist} 0]
-        set vuser [lindex ${vlist} 1]
-        set vname [lindex ${vlist} 2]
-
-        # NOTE: now expects github.com or golang.org
-        switch -exact ${vdomain} {
-            github.com { set ghuser ${vuser} }
-            golang.org { set ghuser golang }
-        }
-
-        set fname ${ghuser}-${vname}
-        lappend go.vendors [list ${fname} ${imp_name} ${vers}]
-
-        global ${vname}.version
-        set ${vname}.version ${vers}
-
-        master_sites-append https://github.com/${ghuser}/${vname}/tarball/${vers}:${fname}
-        distfiles-append    ${fname}-${vers}.tar.gz:${fname}
-    }
-}
 
 # dependencies to build. remember revbump when you change version of dependencies.
 # https://github.com/peco/peco/blob/master/glide.lock
@@ -103,31 +69,4 @@ checksums-append    davecgh-go-spew-${go-spew.version}.tar.gz \
                         sha1 144550c2cffa1936c9ecd669aca103c9072f3710 \
                         sha256 1a362b9430d82e3e28b4525bdfa45515e26642b046f8c81f6c114b346d415d55
 
-# setup build sources as gopath style:
-#   workpath/
-#       peco-0.4.1/
-#       gopath/src/github.com/
-#           peco/peco/
-#           jessevdk/go-flags-v/
-#             :
-set gopath      ${workpath}/gopath
-post-extract {
-    file mkdir ${gopath}/src/github.com/peco
-    ln -s ${worksrcpath} ${gopath}/src/github.com/peco/peco
-
-    foreach vlist ${go.vendors} {
-        set fname [lindex ${vlist} 0]
-        set imp_name [lindex ${vlist} 1]
-        file mkdir ${gopath}/src/[file dirname ${imp_name}]
-        move [glob ${workpath}/${fname}-*] ${gopath}/src/${imp_name}
-    }
-}
-
-build.cmd       go
-build.target    build
 build.args      cmd/peco/peco.go
-build.env       GOPATH="${gopath}"
-
-destroot {
-    xinstall ${worksrcpath}/peco ${destroot}${prefix}/bin
-}
