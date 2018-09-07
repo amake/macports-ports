@@ -6,13 +6,14 @@
 options go.vendors
 
 options go.binary_name
-default go.binary_name  {${name}}
+default go.binary_name  {${github.project}}
 
 default use_configure   no
 
 default depends_build   port:go
 
 default build.cmd       go
+default build.args      {"-o ${go.binary_name}"}
 default build.target    build
 default build.env       {"GOPATH=${gopath} CC=${configure.cc}"}
 
