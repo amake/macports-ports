@@ -3,12 +3,13 @@
 # This PortGroup accommodates golang projects hosted at GitHub.
 # Assumes use with github-1.0 PortGroup.
 
-options go.vendors
-
 options go.binary_name
 default go.binary_name  {${github.project}}
 
+default platforms       darwin
+
 default use_configure   no
+default dist_subdir     go
 
 default depends_build   port:go
 
@@ -16,6 +17,8 @@ default build.cmd       go
 default build.args      {"-o ${go.binary_name}"}
 default build.target    build
 default build.env       {"GOPATH=${gopath} CC=${configure.cc}"}
+
+set go.vendors {}
 
 # go.vendors-append name1 ver1 name2 ver2...
 # When a glide.lock is present:
