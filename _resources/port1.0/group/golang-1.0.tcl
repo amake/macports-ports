@@ -55,10 +55,10 @@ default build.env       {"GOPATH=${gopath} CC=${configure.cc}"}
 # When a glide.lock is present: use go2port or
 # $ curl https://raw.githubusercontent.com/${github.author}/${github.project}/${version}/glide.lock |
 #   ruby -r yaml -e 'YAML.load(ARGF)["imports"].each{|d| puts d["name"]+" "+d["version"]}'
-set _go.vendors.internal {}
+set go.vendors._internal {}
 option_proc go.vendors handle_go_vendors
 proc handle_go_vendors {option action {value ""}} {
-    global _go.vendors.internal
+    global go.vendors._internal
     if {${action} eq "set"} {
         foreach {imp_name vers} ${value} {
             set vlist [split ${imp_name} /]
@@ -85,7 +85,7 @@ proc handle_go_vendors {option action {value ""}} {
             # the package when moving into the GOPATH, because the vuser
             # here may be wrong (renamed on GitHub, etc.).
             set sha1_short [string range ${vers} 0 6]
-            lappend _go.vendors.internal [list ${sha1_short} ${imp_name} ${vers}]
+            lappend go.vendors._internal [list ${sha1_short} ${imp_name} ${vers}]
 
             global ${vname}.version
             set ${vname}.version ${vers}
@@ -109,7 +109,7 @@ post-extract {
     file mkdir ${gopath}/src/github.com/${github.author}
     ln -s ${worksrcpath} ${gopath}/src/github.com/${github.author}/${github.project}
 
-    foreach vlist ${_go.vendors.internal} {
+    foreach vlist ${go.vendors._internal} {
         set sha1_short [lindex ${vlist} 0]
         set imp_name [lindex ${vlist} 1]
         file mkdir ${gopath}/src/[file dirname ${imp_name}]
