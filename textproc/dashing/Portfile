@@ -1,10 +1,9 @@
 # -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
 
 PortSystem          1.0
-PortGroup           github 1.0
 PortGroup           golang 1.0
 
-github.setup        technosophos dashing 0e0519d76ed6bbbe02b00ee1d1ac24697d349f49
+go.setup            technosophos dashing 0e0519d76ed6bbbe02b00ee1d1ac24697d349f49
 version             20180216
 name                dashing
 categories          textproc devel
@@ -21,7 +20,7 @@ checksums           dashing-${github.version}.tar.gz \
                         sha256  f8786555cbe942d37c9b242813b40a2d8531290b0b3212ed8656a3e25743c4cc \
                         size    57610
 
-go.vendors-append   github.com/andybalholm/cascadia 3ad29d1ad1c4f2023e355603324348cf1f4b2d48 \
+go.vendors          github.com/andybalholm/cascadia 3ad29d1ad1c4f2023e355603324348cf1f4b2d48 \
                     github.com/codegangsta/cli c31a7975863e7810c92e2e288a9ab074f9a88f29 \
                     github.com/mattn/go-sqlite3 5510da399572b4962c020184bb291120c0a412e2 \
                     golang.org/x/crypto f18420efc3b4f8e9f3d51f6bd2476e92c46260e9 \
@@ -65,3 +64,7 @@ post-extract {
 build.cmd           make
 build.target        build
 build.args          VERSION=${version}
+
+destroot {
+    xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin
+}
