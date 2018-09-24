@@ -1,0 +1,40 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           qmake5 1.0
+
+name                yubioath-desktop
+version             4.3.4
+checksums           rmd160  3681839cbaa65e343b9ab84b59d0bfccb564b501 \
+                    sha256  0d8c0d0f4672dfac24a142c34dc49a52a75241f62897f6917e518b01c2916741 \
+                    size    465920
+
+categories          aqua security
+platforms           darwin
+maintainers         {amake @amake} openmaintainer
+license             BSD
+
+description         Generate one-time passcodes with a Yubikey
+long_description \
+    Application for generating Open Authentication (OATH) time-based TOTP and \
+    event-based HOTP one-time password codes, with the help of a YubiKey that \
+    protects the shared secrets.
+
+master_sites        https://developers.yubico.com/yubioath-desktop/Releases/
+
+use_tar             yes
+extract.suffix      .tar.gz
+
+worksrcdir          ${name}
+
+depends_lib-append  port:yubikey-manager
+
+use_parallel_build  no
+
+qt5.depends_component  qtquickcontrols
+
+post-configure {
+    reinplace "s|/usr/bin||g" ${worksrcpath}/Makefile
+}
+
+destroot.destdir    INSTALL_ROOT=${destroot}${applications_dir}
