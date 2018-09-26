@@ -1,0 +1,52 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem       1.0
+
+set major_version 11
+set minor_version 28
+name             openjdk${major_version}
+version          ${major_version}_${minor_version}
+
+categories       java devel
+maintainers      {amake @amake} openmaintainer
+platforms        darwin
+license          GPL-2
+supported_archs  x86_64
+
+description      Open Java Development Kit ${major_version}
+
+long_description Production-ready, free and open-source build of the Java \
+                 Development Kit, an implementation of the Java Standard \
+                 Edition (SE) ${major_version} Platform. OpenJDK is the  \
+                 official reference implementation of Java SE. Included \
+                 components are the HotSpot virtual machine, the Java class \
+                 library and the Java compiler.
+
+homepage         http://jdk.java.net/${major_version}/
+master_sites     https://download.java.net/java/GA/jdk${major_version}/${minor_version}/GPL/
+distname         openjdk-${major_version}+${minor_version}_osx-x64_bin
+
+checksums        rmd160  c914d38c78b2943c7b47ff2da4e8da89438f96cd \
+                 sha256  6b969d2df6a9758d9458f5ba47939250e848dfba8b49e41c935cf210606b6d38 \
+                 size    182717049
+
+worksrcdir       jdk-${major_version}.jdk
+
+use_configure    no
+
+build {}
+
+# macOS Java tools expect to find Java virtual machines under
+# /Library/Java/JavaVirtualMachines, which is not under ${prefix}.
+destroot.violate_mtree yes
+
+destroot {
+    set target ${destroot}/Library/Java/JavaVirtualMachines
+    xinstall -m 755 -d ${target}
+    copy ${worksrcpath} ${target}
+}
+
+livecheck.type      regex
+livecheck.url       ${homepage}
+livecheck.regex     "openjdk-(\\d+\\+\\d+)_osx-x64_bin"
+livecheck.version   ${major_version}+${minor_version}
