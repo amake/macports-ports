@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: tcl; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=tcl:et:sw=4:ts=4:sts=4
+
+PortSystem          1.0
+PortGroup           golang 1.0
+
+go.setup            github.com/lopezator/sqlfmt 0.1.0 v
+categories          devel
+maintainers         {amake @amake} openmaintainer
+license
+
+description         SQL formatter with width-aware output
+
+long_description    A formatter for SQL statements, primarily of the \
+                    CockroachDB variety but should work well with PostgreSQL \
+                    and others as well.
+
+checksums           rmd160  63217f9118d230306a6df31448373190fd1b9e74 \
+                    sha256  32e2c82378528c55f79a18f5c29e35d2ead3a9ea161b669d7f93ef11939cf7aa \
+                    size    5116274
+
+build.target        ./cmd/${name}
+build.pre-args      -ldflags '-X main.Version=${version} \
+                        -X main.GitRev=v${version}'
+build.args          ${build.target}
+
+destroot {
+    xinstall -m 755 ${worksrcpath}/${name} ${destroot}${prefix}/bin/
+}
