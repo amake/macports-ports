@@ -1,11 +1,45 @@
---- docon.cabal.sav	2008-06-17 19:15:25.000000000 -0400
-+++ docon.cabal		2008-06-17 19:15:41.000000000 -0400
-@@ -39,7 +39,7 @@
-   -fno-warn-overlapping-patterns -fwarn-unused-binds 
-   -fwarn-unused-matches -fwarn-unused-imports
-   -O
--  +RTS -M400m -RTS  
-+  +RTS -M800m -RTS  
+--- docon.cabal.sav	2014-04-28 21:34:01.000000000 +0900
++++ docon.cabal	2019-10-04 17:57:37.000000000 +0900
+@@ -10,7 +10,7 @@
+ synopsis:        computer algebra library written in Haskell
+ tested-with:     GHC
+                  -- should be like  "ghc-6.12.3" "Hugs-5.5" ...
+-                 .
++
+ build-type:      Simple
+ build-depends:   base >= 4 && < 5, containers >= 0.3 && <= 0.5.5.1, 
+                  random >= 1.0 && < 1.2
+@@ -18,12 +18,12 @@
  --
- --  -prof -auto-all
- -- for  profiling  add also   --enable-library-profiling  
+ -- hs-source-dirs:  "." parse auxil lin residue pol pol/factor
+ --                  pol/symmfunc
+-                 .
++
+ exposed-modules:
+         DExport DPrelude Categs SetGroup RingModule DPair Z Fraction
+         VecMatr LinAlg Pol GBasis Residue Permut Partition AlgSymmF SolveCubic
+         SolveQuartic 
+-        .
++
+ other-modules:
+   Iparse_ OpTab_  System_ 
+   Categs_ DPair_ Matr0_ Ring0_ Semigr_ Vec1_ Char_ Fract_ Matr1_ Ring1_ Set_ 
+@@ -35,15 +35,15 @@
+   GBas_ Pol__ RdLatP_ UPol_
+   Pfact0_ Pfact1_ Pfact2_ Pfact3_ Pfact__ Pfact_
+   HookBand_ Partit_ SymmFn0_ SymmFn1_ SymmFn_ Sympol_
+-  .
++
+ extensions:
+   TypeSynonymInstances UndecidableInstances FlexibleContexts
+   FlexibleInstances MultiParamTypeClasses OverlappingInstances
+   RecordWildCards NamedFieldPuns DoAndIfThenElse
+-  .
++
+ ghc-options:
+   -fno-warn-overlapping-patterns -fwarn-unused-binds
+   -fwarn-unused-matches -fwarn-unused-imports 
+   -fcontext-stack=30
+   -O
+-  +RTS -M400m -RTS
++  +RTS -M800m -RTS
