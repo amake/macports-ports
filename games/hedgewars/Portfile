@@ -25,21 +25,7 @@ checksums               rmd160  25919e6d8d170d2873e32ebacbe3811526edbd10 \
                         size    173042171
 
 depends_build-append    port:pkgconfig \
-                        port:ghc \
-                        port:hs-vector \
-                        port:hs-bytestring-show \
-                        port:hs-network \
-                        port:hs-hslogger \
-                        port:hs-utf8-string \
-                        port:hs-sha \
-                        port:hs-entropy \
-                        port:hs-zlib \
-                        port:hs-random \
-                        port:hs-conduit \
-                        port:hs-regex-tdfa \
-                        port:hs-mtl \
-                        port:hs-sandi \
-                        port:hs-dataenc
+                        port:cabal
 
 depends_lib-append      path:bin/ffmpeg:ffmpeg \
                         port:libogg \
@@ -89,9 +75,50 @@ patchfiles-append       patch-remove-hardcoded-stdlib-QTfrontend.diff
 # remove clang search and compiler ID override which messes everything up during the build
 patchfiles-append       patch-CMakeLists-delete-clang-search.diff
 
+use_parallel_build      no
+
+pre-build {
+    set cabal_args "--prefix=${prefix} \
+        --bindir=${prefix}/bin \
+        --libdir=${prefix}/lib \
+        --libsubdir=${name} \
+        --dynlibdir=${prefix}/lib \
+        --libexecdir=${prefix}/libexec \
+        --libexecsubdir=${name} \
+        --datadir=${prefix}/share/${name} \
+        --docdir=${prefix}/share/doc/${name} \
+        --htmldir=${prefix}/share/doc/${name} \
+        --sysconfdir=${prefix}/etc/${name} \
+        --enable-relocatable"
+    set cabal_packages "vector \
+        bytestring \
+        network \
+        time \
+        mtl \
+        sandi \
+        hslogger \
+        process \
+        utf8-string \
+        SHA \
+        entropy \
+        zlib \
+        random \
+        regex-tdfa \
+        deepseq"
+    set constraints "--constraint 'network < 2.7' --constraint 'hslogger < 1.3'"
+    # system -W ${worksrcpath} "${prefix}/bin/cabal new-update"
+    # system -W ${worksrcpath} "${prefix}/bin/cabal ${cabal_args} install --lib ${cabal_packages} ${constraints}"
+}
+
 post-destroot {
     move ${destroot}${workpath}/build/Hedgewars.app ${destroot}${applications_dir}/Hedgewars.app
     move ${worksrcpath}/man/hedgewars.6 ${destroot}${prefix}/share/man/man6/hedgewars.6
  }
 
 livecheck.url           ${homepage}/download.html
+
+variant server description Game server {
+    depends.build-append   port:ghc
+
+    configure.args-delete  -DNOSERVER:BOOL=ON
+}
